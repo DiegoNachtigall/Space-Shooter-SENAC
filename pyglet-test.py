@@ -13,6 +13,9 @@ class MyWindow(pyglet.window.Window):
         self.tiros = []
         self.inimigos = []
         self.inimigo_velocidade = 2
+        self.pontos = 0
+        self.vidas = 3
+        self.jogando = False
 
         
     def create_tiro(self):
@@ -20,18 +23,30 @@ class MyWindow(pyglet.window.Window):
         self.tiros.append(tiro)
     
     def create_inimigo(self):
-        inimigo = pyglet.resource.image('/monstro.png')
-        inimigo.x = random.randint(30, 470)
-        inimigo.y = 800
+        invader_frames = []
+        for i in range(1, 3):
+            image = pyglet.resource.image('assets/invader' + str(i) + '.png')
+            image.anchor_x = image.width // 2
+            image.anchor_y = image.height // 2
+            invader_frames.append(pyglet.image.AnimationFrame(image, 0.5))
+        invader1 = pyglet.image.Animation(invader_frames)
+        inimigo = pyglet.sprite.Sprite(invader1, x=random.randint(0, 300), y=600, batch=self.batch)
         self.inimigos.append(inimigo)
         
-    
-
+    def colisao(self):
+        if self.inimigos and self.tiros:
+            for inimigo in self.inimigos:
+                for tiro in self.tiros:
+                    if inimigo.x - 25 < tiro.x < inimigo.x + 25 and inimigo.y - 25 < tiro.y < inimigo.y + 25:
+                        inimigo.delete()
+                        tiro.delete()
+                        self.inimigos.remove(inimigo)
+                        self.tiros.remove(tiro)
+                        self.pontos += 1
     def on_draw(self):
         self.clear()
         self.batch.draw()
     
-
 
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.LEFT or symbol == pyglet.window.key.A:
@@ -48,17 +63,23 @@ class MyWindow(pyglet.window.Window):
             self.controle['RIGHT'] = False
 
     def update(self, dt):
+        self.colisao()
+        self.label = pyglet.text.Label(str(self.pontos), x=10, y=10, batch=self.batch)
         if self.controle['LEFT']:
             self.personagem.x -= self.velocidade
         if self.controle['RIGHT']:
             self.personagem.x += self.velocidade
+        if self.personagem.x < 0:
+            self.personagem.x = 0
+        if self.personagem.x > 270:
+            self.personagem.x = 270
         if self.tiros:
             for tiro in self.tiros:
                 tiro.y += 5
                 if tiro.y > 600:
                     tiro.delete()
                     self.tiros.remove(tiro)
-        if random.randint(0, 100) == 0:
+        if random.randint(0, 100) < 2 or not self.inimigos:
             self.create_inimigo()
         if self.inimigos:
             for inimigo in self.inimigos:
@@ -66,8 +87,15 @@ class MyWindow(pyglet.window.Window):
                 if inimigo.y < 0:
                     inimigo.delete()
                     self.inimigos.remove(inimigo)
+                    self.vidas -= 1
+        if self.pontos > 25:
+            self.inimigo_velocidade = 3
+        if self.pontos > 50:
+            self.inimigo_velocidade = 4
+        if self.pontos > 100:
+            self.inimigo_velocidade = 5
 
-window = MyWindow(500, 800, 'My Window', resizable=True)
-    
+window = MyWindow(300, 600, 'My Window', resizable=False)
+
 pyglet.clock.schedule_interval(window.update, 1/60)
 pyglet.app.run()
