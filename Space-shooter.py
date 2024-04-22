@@ -172,13 +172,13 @@ def game_loop():
 # Funções de menu de controles
 def mostra_controles():
     os.system("cls")
-    print("+" + "-"*22 + "+")
-    print("|" + "Controles".center(22) + "|")
-    print("+" + "-"*22 + "+")
-    print("|"+"4 ou a - Esquerda".ljust(22)+"|")
-    print("|"+"6 ou d - Direita".ljust(22)+"|")
-    print("|"+"Enter - Atirar".ljust(22)+"|")
-    print("+" + "-"*22 + "+")
+    print("+" + "-"*40 + "+")
+    print("|" + "Controles".center(40) + "|")
+    print("+" + "-"*40 + "+")
+    print("|"+"4 ou a + ENTER - Move nave para esquerda".ljust(40)+"|")
+    print("|"+"6 ou d + ENTER - Move nave para Direita".ljust(40)+"|")
+    print("|"+"ENTER - Atirar".ljust(40)+"|")
+    print("+" + "-"*40 + "+")
     input("Pressione Enter para voltar")
 
 # Função para mostrar as regras
@@ -188,8 +188,9 @@ def mostra_regras():
     print("|" + "Regras".center(80) + "|")
     print("+" + "-"*80 + "+")
     print("|"+"- O objetivo do jogo é pontuar o máximo possível".ljust(80)+"|")
+    print("|"+"- Evite que os monstros cheguem até o final, com exceção do anjo".ljust(80)+"|")
     print("|"+"- 👾 concede 1 ponto".ljust(79)+"|")
-    print("|"+"- 👽 concede 2 pontos, chance de spawnar mais inimigos se deixados vivos".ljust(79)+"|")
+    print("|"+"- 👽 concede 2 pontos, chance de invocar inimigos como escudo".ljust(79)+"|")
     print("|"+"- 👹 concede 5 pontos, andam 2 espaços".ljust(79)+"|")
     print("|"+"- 👼 concede -5 pontos se acertado e +5 se chegarem no jogador, andam 2 espaços".ljust(79)+"|")
     print("|"+"- 💖 concede 1 vida".ljust(79)+"|")
