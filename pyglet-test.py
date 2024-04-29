@@ -9,7 +9,7 @@ class MyWindow(pyglet.window.Window):
         self.set_location(25, 25)
         self.personagem = pyglet.shapes.Triangle(20, 20, 35, 50, 50, 20, color=(255, 0, 0), batch=self.batch)
         self.controle = {'LEFT': False, 'RIGHT': False}
-        self.velocidade = 5
+        self.velocidade = 10
         self.tiros = []
         self.inimigos = []
         self.inimigo_velocidade = 2
@@ -19,18 +19,29 @@ class MyWindow(pyglet.window.Window):
 
         
     def create_tiro(self):
-        tiro = pyglet.shapes.Circle(self.personagem.x + 25, self.personagem.y + 50, 5, color=(0, 0, 255), batch=self.batch)
+        tiro = pyglet.shapes.Rectangle(self.personagem.x + 25, self.personagem.y + 50, 2, 10, color=(0, 0, 255), batch=self.batch)
         self.tiros.append(tiro)
     
     def create_inimigo(self):
-        invader_frames = []
-        for i in range(1, 3):
-            image = pyglet.resource.image('assets/invader' + str(i) + '.png')
-            image.anchor_x = image.width // 2
-            image.anchor_y = image.height // 2
-            invader_frames.append(pyglet.image.AnimationFrame(image, 0.5))
-        invader1 = pyglet.image.Animation(invader_frames)
-        inimigo = pyglet.sprite.Sprite(invader1, x=random.randint(0, 300), y=600, batch=self.batch)
+        aleatorio = random.randint(0, 100)
+        inimigo_selecionado = None
+        if aleatorio < 50:
+            invader_frames = []
+            for i in range(1, 3):
+                image = pyglet.resource.image('assets/invader' + str(i) + '.png')
+                image.anchor_x = image.width // 2
+                image.anchor_y = image.height // 2
+                invader_frames.append(pyglet.image.AnimationFrame(image, 0.5))
+            inimigo_selecionado = pyglet.image.Animation(invader_frames)
+        if aleatorio >= 50:
+            monster_frames = []
+            for i in range(1, 3):
+                image = pyglet.resource.image('assets/monster' + str(i) + '.png')
+                image.anchor_x = image.width // 2
+                image.anchor_y = image.height // 2
+                monster_frames.append(pyglet.image.AnimationFrame(image, 0.5))
+            inimigo_selecionado = pyglet.image.Animation(monster_frames)
+        inimigo = pyglet.sprite.Sprite(inimigo_selecionado, x=random.randint(20, 280), y=600, batch=self.batch)
         self.inimigos.append(inimigo)
         
     def colisao(self):
@@ -64,6 +75,7 @@ class MyWindow(pyglet.window.Window):
 
     def update(self, dt):
         self.colisao()
+        print(self.inimigos)
         self.label = pyglet.text.Label(str(self.pontos), x=10, y=10, batch=self.batch)
         if self.controle['LEFT']:
             self.personagem.x -= self.velocidade
@@ -75,11 +87,11 @@ class MyWindow(pyglet.window.Window):
             self.personagem.x = 270
         if self.tiros:
             for tiro in self.tiros:
-                tiro.y += 5
+                tiro.y += 10
                 if tiro.y > 600:
                     tiro.delete()
                     self.tiros.remove(tiro)
-        if random.randint(0, 100) < 2 or not self.inimigos:
+        if random.randint(0, 100) < 4 or not self.inimigos:
             self.create_inimigo()
         if self.inimigos:
             for inimigo in self.inimigos:
@@ -88,14 +100,20 @@ class MyWindow(pyglet.window.Window):
                     inimigo.delete()
                     self.inimigos.remove(inimigo)
                     self.vidas -= 1
-        if self.pontos > 25:
+        if self.pontos > 10:
             self.inimigo_velocidade = 3
-        if self.pontos > 50:
+        if self.pontos > 25:
             self.inimigo_velocidade = 4
-        if self.pontos > 100:
+        if self.pontos > 50:
             self.inimigo_velocidade = 5
+        if self.pontos > 100:
+            self.inimigo_velocidade = 7
+        if self.pontos > 150:
+            self.inimigo_velocidade = 10
+        if self.pontos > 200:
+            self.inimigo_velocidade = 12
 
 window = MyWindow(300, 600, 'My Window', resizable=False)
 
-pyglet.clock.schedule_interval(window.update, 1/60)
+pyglet.clock.schedule_interval(window.update, 1/30)
 pyglet.app.run()
