@@ -11,10 +11,14 @@ jogador = {
     "x": 19,
     "y": 3,
     "vida": 3,
-    "pontos": 0
+    "pontos": 0,
+    "vida_boss": 6,
+    "contador": 1
 }
 
-inimigos = list("💖👼👾👽👹💣")
+inimigos = list("💖👼👾👽👹💣🧠🟥")
+
+
 
 # Função para preencher o grid com blocos pretos
 def preenche_grid():
@@ -61,10 +65,11 @@ def spawn_inimigo():
             grid[0][y] = inimigos[3]
         elif aleatorio <= 989:
             grid[0][y] = inimigos[4]
-        elif aleatorio <= 999:
+        elif aleatorio <= 1000:
             grid[0][y] = inimigos[5] 
-        else:
-            spawna_chefe()
+    if jogador["pontos"] >= 100 and jogador["pontos"] // 100 == jogador["contador"]:
+        spawna_chefe()
+        jogador["contador"] += 1
 
 # Função para mover os inimigos
 def move_inimigos():
@@ -88,7 +93,10 @@ def move_inimigos():
                     grid[i][j] = "⬛"
                 else:
                     if grid[i][j] == "👹" or grid[i][j] == "👼":
-                        grid[i+2][j] = grid[i][j]
+                        if grid[i+2][j] in inimigos or grid[i+1][j] in inimigos:
+                            grid[i+1][j] = grid[i][j]
+                        else:
+                            grid[i+2][j] = grid[i][j]
                     elif grid[i][j] == "👽":
                         grid[i+1][j] = grid[i][j]
                         if random.randint(1, 100) < 40:
@@ -100,10 +108,15 @@ def move_inimigos():
                     grid[i][j] = "⬛"
 
 def spawna_chefe():
-    grid[0][3] = "👹"
-    grid[0][4] = "👹"
-    grid[1][3] = "👹"
-    grid[1][4] = "👹"
+    grid[0][2] = "🟥"
+    grid[0][3] = "🟥"
+    grid[0][4] = "🟥"
+    grid[1][2] = "🟥"
+    grid[1][3] = "🧠"
+    grid[1][4] = "🟥"
+    grid[2][2] = "🟥"
+    grid[2][3] = "🟥"
+    grid[2][4] = "🟥"
 
 # Função para verificar colisão do tiro com os inimigos
 def colisao(x, y):
@@ -119,15 +132,32 @@ def colisao(x, y):
             bomba()
         elif grid[x][y] == "👽":
             jogador["pontos"] += 2
+        elif grid[x][y] == "🧠":
+            jogador["vida_boss"] -= 1
+            if jogador["vida_boss"] == 0:
+                grid[x-1][y-1] = "⬛"
+                grid[x-1][y] = "⬛"
+                grid[x-1][y+1] = "⬛"
+                grid[x][y-1] = "⬛"
+                grid[x][y] = "⬛"
+                grid[x][y+1] = "⬛"
+                grid[x+1][y-1] = "⬛"
+                grid[x+1][y+1] = "⬛"
+                jogador["pontos"] += 30
+                jogador["vida_boss"] = 3
+                bomba()
+        elif grid[x][y] == "🟥":
+            jogador["pontos"] += 0
         else:
             jogador["pontos"] += 1
-        grid[x][y] = "🎇"
-        if grid[x+1][y] == "🔸":
-            grid[x+1][y] = "⬛"
-        imprime_grid()
-        time.sleep(0.2)
-        grid[x][y] = "⬛"
-        return True
+        if grid[x][y] != "🧠":
+            grid[x][y] = "🎇"
+            if grid[x+1][y] == "🔸":
+                grid[x+1][y] = "⬛"
+            imprime_grid()
+            time.sleep(0.2)
+            grid[x][y] = "⬛"
+            return True
 
 # Função para atirar
 def atira():
