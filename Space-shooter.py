@@ -92,7 +92,8 @@ def move_inimigos():
                     elif grid[i][j] == "👽":
                         grid[i+1][j] = grid[i][j]
                         if random.randint(1, 100) < 40:
-                            grid[i+2][j] = "👾"
+                            if i != 18:
+                                grid[i+2][j] = "👾"
 
                     else:
                         grid[i+1][j] = grid[i][j]
